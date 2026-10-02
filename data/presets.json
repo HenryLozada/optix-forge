@@ -1,0 +1,28 @@
+{
+  "engines": {
+    "Unreal Engine": {
+      "sections": {
+        "renderer": "SystemSettings",
+        "player": "/Script/Engine.LocalPlayer",
+        "engine": "/Script/Engine.Engine"
+      },
+      "defaults": {
+        "disable_motion_blur": true,
+        "disable_dof": true,
+        "disable_chromatic_aberration": true,
+        "disable_film_grain": true,
+        "disable_vignette": true,
+        "disable_lens_flare": false,
+        "force_anisotropic_16x": true,
+        "fix_fov_aspect": true,
+        "unlock_fps": true,
+        "custom_fov": 100
+      }
+    }
+  },
+  "aspect_ratios": [
+    { "id": "16:9", "label": "16:9 Estándar", "value": "1.777778" },
+    { "id": "21:9", "label": "21:9 Ultrawide (2560x1080 / 3440x1440)", "value": "2.388889" },
+    { "id": "32:9", "label": "32:9 Super Ultrawide (5120x1440)", "value": "3.555556" }
+  ]
+}

@@ -1,0 +1,1157 @@
+/* ==========================================================================
+   OPTIX FORGE // NVIDIA POWER GREEN ARCHITECTURE & TEKKEN-STRIKE IMPACT SYSTEM
+   ========================================================================== */
+
+:root {
+  --bg-black: #000000;
+  --bg-carbon: #07090a;
+  --bg-surface: #0f1214;
+  --bg-surface-elevated: #161a1e;
+  --bg-surface-hover: #1c2227;
+
+  --nvidia-green: #76b900;
+  --nvidia-neon: #bff230;
+  --nvidia-glow: rgba(118, 185, 0, 0.45);
+  --nvidia-neon-glow: rgba(191, 242, 48, 0.6);
+
+  --accent-amber: #df6500;
+  --accent-red: #ff2a2a;
+  --accent-red-glow: rgba(255, 42, 42, 0.4);
+
+  --text-pure: #ffffff;
+  --text-primary: #e6edee;
+  --text-secondary: #8c9ba5;
+  --text-muted: #52606a;
+
+  --border-dark: #22292f;
+  --border-active: #76b900;
+  --border-neon: #bff230;
+
+  --font-display: 'Chakra Petch', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-black);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* SCANLINE & HUD OVERLAY */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.6;
+}
+
+.hud-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 20%, rgba(118, 185, 0, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* APP CONTAINER */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  z-index: 2;
+}
+
+/* TOP BAR // HEADER */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, #111417 0%, #080a0c 100%);
+  border-bottom: 2px solid var(--nvidia-green);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.brand-zone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.matrix-chip {
+  width: 14px;
+  height: 14px;
+  background: var(--nvidia-neon);
+  box-shadow: 0 0 12px var(--nvidia-neon);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+  animation: pulse-chip 2s infinite ease-in-out;
+}
+
+@keyframes pulse-chip {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.92); }
+}
+
+.glitch-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-pure);
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--nvidia-glow);
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--nvidia-green);
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  background: rgba(118, 185, 0, 0.08);
+  border-left: 2px solid var(--nvidia-green);
+}
+
+.system-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.telem-item .label {
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+.telem-item .value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.telem-item .glow-green {
+  color: var(--nvidia-neon);
+  text-shadow: 0 0 8px var(--nvidia-neon-glow);
+}
+
+/* DRIVE MATRIX STRIP */
+.drive-matrix-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-dark);
+  gap: 16px;
+}
+
+.drive-strip-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.drive-chips {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.drive-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-dark);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.12s cubic-bezier(0.1, 0.9, 0.2, 1);
+  white-space: nowrap;
+}
+
+.drive-chip:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--nvidia-green);
+  color: var(--text-pure);
+  transform: translateY(-1px);
+}
+
+.drive-chip.active {
+  background: rgba(118, 185, 0, 0.14);
+  border: 1px solid var(--nvidia-neon);
+  color: var(--text-pure);
+  box-shadow: 0 0 12px var(--nvidia-glow);
+}
+
+.drive-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn-sharp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #15191d;
+  border: 1px solid #2f3840;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+}
+
+.action-btn-sharp:hover {
+  border-color: var(--nvidia-green);
+  color: var(--nvidia-neon);
+  background: #1d2329;
+}
+
+.action-btn-sharp.pulse-green {
+  border-color: var(--nvidia-green);
+  background: rgba(118, 185, 0, 0.08);
+}
+
+.action-btn-sharp.pulse-green:hover {
+  background: var(--nvidia-green);
+  color: var(--bg-black);
+  box-shadow: 0 0 14px var(--nvidia-glow);
+}
+
+/* SEARCH & FILTER STRIP */
+.search-filter-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: #090b0d;
+  border-bottom: 1px solid var(--border-dark);
+  gap: 20px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dark);
+  padding: 6px 12px;
+  width: 440px;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--nvidia-neon);
+  box-shadow: 0 0 10px var(--nvidia-glow);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  margin-right: 8px;
+  font-size: 0.9rem;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: var(--text-pure);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  outline: none;
+  width: 100%;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.clear-search {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+}
+
+.clear-search:hover {
+  color: var(--text-pure);
+}
+
+.filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border-dark);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+}
+
+.pill:hover {
+  border-color: var(--nvidia-green);
+  color: var(--text-pure);
+}
+
+.pill.active {
+  background: var(--nvidia-green);
+  border-color: var(--nvidia-green);
+  color: var(--bg-black);
+  font-weight: 700;
+}
+
+/* MAIN CONTENT // 2-PANEL LAYOUT */
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* GAMES ZONE (REJILLA ESTILO TEKKEN FIGHTER SELECT) */
+.games-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-dark);
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.zone-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+}
+
+.zone-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--nvidia-green);
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding-bottom: 30px;
+}
+
+/* TARJETA DE JUEGO // TEKKEN CHARACTER SELECT SNAP */
+.game-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dark);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.08s cubic-bezier(0.1, 1.2, 0.4, 1), border-color 0.08s ease, box-shadow 0.08s ease;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+/* HOVER AGRESIVO CON IMPACTO SECO */
+.game-card:hover {
+  transform: scale(1.035) translateY(-3px);
+  border-color: var(--nvidia-neon);
+  box-shadow: 0 0 20px rgba(118, 185, 0, 0.5), inset 0 0 15px rgba(191, 242, 48, 0.15);
+  z-index: 10;
+}
+
+.game-card:hover .card-edge-glow {
+  opacity: 1;
+}
+
+/* TARJETA ACTIVA (LOCKED IN) */
+.game-card.selected {
+  border-color: var(--nvidia-neon);
+  background: #141b18;
+  box-shadow: 0 0 28px rgba(191, 242, 48, 0.75), inset 0 0 25px rgba(118, 185, 0, 0.3);
+  transform: scale(1.02);
+  animation: strike-locked 0.25s cubic-bezier(0.1, 1.3, 0.3, 1);
+}
+
+@keyframes strike-locked {
+  0% { transform: scale(0.96); filter: brightness(2); }
+  60% { transform: scale(1.05); filter: brightness(1.3); }
+  100% { transform: scale(1.02); filter: brightness(1); }
+}
+
+.card-edge-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--nvidia-neon);
+  box-shadow: 0 0 10px var(--nvidia-neon);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.game-card.selected .card-edge-glow {
+  opacity: 1;
+}
+
+.card-banner-box {
+  height: 120px;
+  background: #111518;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-procedural-banner {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 20%, rgba(118, 185, 0, 0.25), transparent 60%), linear-gradient(135deg, #101417 0%, #080a0c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.card-procedural-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(118, 185, 0, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(118, 185, 0, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.card-title-watermark {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.05);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.card-badges {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.badge-platform {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid var(--border-dark);
+  color: var(--text-pure);
+  border-radius: 2px;
+}
+
+.badge-drive {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(118, 185, 0, 0.2);
+  border: 1px solid var(--nvidia-green);
+  color: var(--nvidia-neon);
+  border-radius: 2px;
+}
+
+.badge-bak {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(223, 101, 0, 0.85);
+  color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(223, 101, 0, 0.6);
+  z-index: 2;
+}
+
+.card-body {
+  padding: 12px;
+}
+
+.card-game-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-pure);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-engine-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.card-engine-info .engine-name {
+  color: var(--nvidia-green);
+  font-weight: 600;
+}
+
+/* TWEAK DOCK (PANEL DERECHO // CONSOLA DE CALIBRACIÓN) */
+.tweak-dock {
+  width: 500px;
+  background: #080a0c;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-dark);
+  overflow-y: auto;
+  position: relative;
+}
+
+.dock-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-crosshair {
+  width: 60px;
+  height: 60px;
+  border: 1px dashed var(--border-dark);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.empty-crosshair::before, .empty-crosshair::after {
+  content: '';
+  position: absolute;
+  background: var(--nvidia-green);
+}
+
+.empty-crosshair::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.empty-crosshair::after {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.empty-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.dock-active-state {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 18px;
+}
+
+.dock-active-state.hidden {
+  display: none;
+}
+
+/* CABECERA DEL JUEGO SELECCIONADO */
+.selected-game-banner {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dark);
+  padding: 16px;
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+
+.selected-game-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--nvidia-neon);
+}
+
+.game-meta {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.game-platform-badge, .game-engine-badge, .game-drive-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.game-platform-badge {
+  background: #1a2228;
+  color: var(--text-pure);
+  border: 1px solid #323e48;
+}
+
+.game-engine-badge {
+  background: rgba(118, 185, 0, 0.15);
+  color: var(--nvidia-neon);
+  border: 1px solid var(--nvidia-green);
+}
+
+.game-drive-badge {
+  background: #1a1622;
+  color: #c084fc;
+  border: 1px solid #7e22ce;
+}
+
+.dock-game-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-pure);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.dock-config-path-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #090b0d;
+  padding: 6px 10px;
+  border: 1px solid var(--border-dark);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.cfg-label {
+  color: var(--nvidia-green);
+  font-weight: 700;
+}
+
+.cfg-path {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
+}
+
+.btn-bind-cfg {
+  background: rgba(118, 185, 0, 0.12);
+  border: 1px solid var(--nvidia-green);
+  color: var(--nvidia-neon);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: all 0.1s ease;
+}
+
+.btn-bind-cfg:hover {
+  background: var(--nvidia-neon);
+  color: var(--bg-black);
+  box-shadow: 0 0 10px var(--nvidia-glow);
+}
+
+.btn-mini-folder {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px;
+}
+
+.btn-mini-folder:hover {
+  filter: brightness(1.4);
+}
+
+/* BLOQUES DE TWEAKS */
+.tweak-modules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tweak-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dark);
+  padding: 14px;
+}
+
+.block-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.block-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--nvidia-neon);
+  background: rgba(118, 185, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.block-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-pure);
+}
+
+/* SLIDER VOLTAJE DE FOV */
+.fov-control-group {
+  margin-bottom: 14px;
+  background: #090b0d;
+  padding: 12px;
+  border: 1px solid var(--border-dark);
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.slider-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.slider-value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--nvidia-neon);
+  text-shadow: 0 0 10px var(--nvidia-neon-glow);
+}
+
+.voltage-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #1c2227;
+  outline: none;
+  border-radius: 1px;
+}
+
+.voltage-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 20px;
+  background: var(--nvidia-neon);
+  border: 1px solid var(--bg-black);
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--nvidia-neon);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ASPECT RATIO BUTTONS */
+.aspect-ratio-selector {
+  margin-top: 12px;
+}
+
+.selector-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.aspect-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.aspect-btn {
+  padding: 8px 4px;
+  background: #14181c;
+  border: 1px solid var(--border-dark);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.1s ease;
+}
+
+.aspect-btn:hover {
+  border-color: var(--nvidia-green);
+  color: var(--text-pure);
+}
+
+.aspect-btn.active {
+  background: rgba(118, 185, 0, 0.15);
+  border-color: var(--nvidia-neon);
+  color: var(--nvidia-neon);
+  box-shadow: 0 0 10px var(--nvidia-glow);
+}
+
+/* SWITCHES GRID & ITEMS */
+.switches-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #0d1012;
+  border: 1px solid var(--border-dark);
+  transition: border-color 0.1s ease;
+}
+
+.switch-row:hover {
+  border-color: rgba(118, 185, 0, 0.4);
+}
+
+.switch-row.highlight {
+  border-color: rgba(118, 185, 0, 0.5);
+  background: #0f1412;
+}
+
+.switch-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 12px;
+}
+
+.switch-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-pure);
+}
+
+.switch-desc {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* MATRIX TOGGLE SWITCH (CHECKBOX ESTILIZADO) */
+.matrix-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.matrix-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #1a2024;
+  border: 1px solid #333d45;
+  transition: 0.1s cubic-bezier(0.1, 1, 0.3, 1);
+  border-radius: 2px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--text-muted);
+  transition: 0.1s cubic-bezier(0.1, 1, 0.3, 1);
+  border-radius: 1px;
+}
+
+.matrix-switch input:checked + .switch-slider {
+  background-color: rgba(118, 185, 0, 0.25);
+  border-color: var(--nvidia-neon);
+  box-shadow: 0 0 10px var(--nvidia-glow);
+}
+
+.matrix-switch input:checked + .switch-slider:before {
+  transform: translateX(20px);
+  background-color: var(--nvidia-neon);
+  box-shadow: 0 0 8px var(--nvidia-neon);
+}
+
+/* BOTONES DE ACCIÓN DE IMPACTO */
+.dock-actions-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* BOTÓN RESTAURAR FÁBRICA (.BAK) */
+.btn-restore-factory {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  background: #1e1313;
+  border: 1px solid #5a2626;
+  color: #ff8c8c;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  transition: all 0.1s ease;
+}
+
+.btn-restore-factory:hover {
+  background: var(--accent-red);
+  border-color: var(--accent-red);
+  color: #ffffff;
+  box-shadow: 0 0 20px var(--accent-red-glow);
+  transform: scale(1.02);
+}
+
+.btn-restore-factory:active {
+  transform: scale(0.98);
+}
+
+/* BOTÓN INYECTAR PARCHE OPTIX // STRIKE TEKKEN */
+.btn-apply-strike {
+  flex: 1.4;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 16px;
+  background: var(--nvidia-green);
+  border: 1px solid var(--nvidia-neon);
+  color: var(--bg-black);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  box-shadow: 0 0 16px var(--nvidia-glow);
+  transition: transform 0.08s cubic-bezier(0.1, 1.4, 0.4, 1), box-shadow 0.08s ease;
+}
+
+.btn-apply-strike:hover {
+  background: var(--nvidia-neon);
+  box-shadow: 0 0 30px var(--nvidia-neon-glow);
+  transform: scale(1.03) translateY(-2px);
+}
+
+.btn-apply-strike:active {
+  transform: scale(0.97) translateY(1px);
+  filter: brightness(1.5);
+}
+
+.dock-status-msg {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 8px;
+  min-height: 32px;
+}
+
+/* NOTIFICACIÓN TOAST DE IMPACTO */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f1418;
+  border: 1px solid var(--nvidia-neon);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--nvidia-glow);
+  display: flex;
+  min-width: 320px;
+  max-width: 440px;
+  z-index: 1000;
+  transform: translateX(120%);
+  transition: transform 0.18s cubic-bezier(0.1, 1.2, 0.3, 1);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+
+.toast-notification.active {
+  transform: translateX(0);
+}
+
+.toast-bar {
+  width: 6px;
+  background: var(--nvidia-neon);
+  box-shadow: 0 0 10px var(--nvidia-neon);
+}
+
+.toast-content {
+  padding: 12px 16px;
+}
+
+.toast-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--nvidia-neon);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.toast-desc {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+/* SÍSMICA / PANTALLA EN SACUDIDA CONTROLADA */
+.screen-shake {
+  animation: shake 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+/* SPINNER VOLTAJE */
+.loading-matrix {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.voltage-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #1a2228;
+  border-top-color: var(--nvidia-neon);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 15px var(--nvidia-glow);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}

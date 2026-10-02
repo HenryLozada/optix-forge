@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTIX FORGE // Engine & FOV / Ultrawide Tweaker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="hud-overlay"></div>
+  <div class="scanline"></div>
+
+  <!-- Contenedor Principal de la App -->
+  <div class="app-container">
+    
+    <!-- HEADER // BARRA SUPERIOR INDUSTRIAL -->
+    <header class="top-bar">
+      <div class="brand-zone">
+        <div class="logo-mark">
+          <div class="matrix-chip"></div>
+          <span class="glitch-text" data-text="OPTIX FORGE">OPTIX FORGE</span>
+        </div>
+        <div class="brand-tag">ENGINE // FOV & ULTRAWIDE MATRIX</div>
+      </div>
+
+      <!-- Métricas de Sistema / Estado -->
+      <div class="system-telemetry">
+        <div class="telem-item">
+          <span class="label">DRIVES:</span>
+          <span class="value active" id="telem-drives">DETECTING...</span>
+        </div>
+        <div class="telem-item">
+          <span class="label">GAMES DETECTED:</span>
+          <span class="value" id="telem-games">0</span>
+        </div>
+        <div class="telem-item">
+          <span class="label">SAFETY:</span>
+          <span class="value glow-green">INMUTABLE .BAK SHIELD</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- BARRA DE SELECCIÓN DE UNIDADES & ACCIONES DE DISCO -->
+    <section class="drive-matrix-bar">
+      <div class="drive-strip-title">UNIDADES ACTIVAS //</div>
+      <div class="drive-chips" id="drive-chips-container">
+        <!-- Chips de unidades inyectados dinámicamente -->
+        <button class="drive-chip active" data-drive="ALL">
+          <span class="drive-icon">⚡</span>
+          <span class="drive-name">TODAS LAS UNIDADES</span>
+        </button>
+      </div>
+      <div class="drive-actions">
+        <button class="action-btn-sharp" id="btn-add-folder">
+          <span class="icon">+</span> CARPETA PERSONALIZADA
+        </button>
+        <button class="action-btn-sharp pulse-green" id="btn-deep-scan">
+          <span class="icon">⟳</span> ESCANEAR A FONDO
+        </button>
+      </div>
+    </section>
+
+    <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+    <div class="search-filter-strip">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="BUSCAR JUEGO O PLATAFORMA (STEAM, EPIC, GOG, XBOX)..." autocomplete="off" spellcheck="false">
+        <button class="clear-search" id="clear-search-btn">✕</button>
+      </div>
+
+      <div class="filter-pills">
+        <button class="pill active" data-filter="ALL">TODOS (<span id="count-all">0</span>)</button>
+        <button class="pill" data-filter="UNREAL">UNREAL ENGINE (<span id="count-unreal">0</span>)</button>
+        <button class="pill" data-filter="CONFIG">CON CONFIG (<span id="count-config">0</span>)</button>
+        <button class="pill" data-filter="RESTORE">RESTAURABLES (<span id="count-restore">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- CUERPO PRINCIPAL // GRID DE SELECCIÓN ESTILO FIGHTER SELECT -->
+    <main class="main-content">
+      
+      <!-- Panel Izquierdo: Rejilla de Juegos con Animación de Impacto -->
+      <section class="games-zone">
+        <div class="zone-header">
+          <span class="zone-title">LIBRERÍA DE COMBATE // SELECCIONA UN JUEGO</span>
+          <span class="zone-hint">[CLIC PARA CARGAR MATRIZ DE AJUSTES]</span>
+        </div>
+        
+        <div class="games-grid" id="games-grid">
+          <!-- Tarjetas generadas dinámicamente -->
+          <div class="loading-matrix">
+            <div class="voltage-loader"></div>
+            <div class="loading-label">SINCRONIZANDO UNIDADES DE ALMACENAMIENTO...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Derecho: Consola de Tweaks & Overclock Visual -->
+      <aside class="tweak-dock" id="tweak-dock">
+        <div class="dock-empty-state" id="dock-empty">
+          <div class="empty-crosshair"></div>
+          <div class="empty-title">NINGÚN JUEGO SELECCIONADO</div>
+          <p class="empty-desc">Haz clic en cualquier juego de la cuadrícula para desplegar sus parámetros de motor, FOV, ultrawide y opciones de restauración.</p>
+        </div>
+
+        <div class="dock-active-state hidden" id="dock-active">
+          <!-- Cabecera del Juego Seleccionado -->
+          <div class="selected-game-banner">
+            <div class="game-meta">
+              <span class="game-platform-badge" id="dock-platform">STEAM</span>
+              <span class="game-engine-badge" id="dock-engine">UNREAL ENGINE 5</span>
+              <span class="game-drive-badge" id="dock-drive">DRIVE C:\</span>
+            </div>
+            <h2 class="dock-game-name" id="dock-game-name">Cyberpunk 2077</h2>
+            <div class="dock-config-path-box">
+              <span class="cfg-label">CONFIG:</span>
+              <span class="cfg-path" id="dock-cfg-path">...</span>
+              <button class="btn-bind-cfg" id="btn-bind-cfg" title="Vincular archivo .ini/.xml manualmente">📎 VINCULAR ARCHIVO</button>
+              <button class="btn-mini-folder" id="btn-open-cfg-folder" title="Abrir carpeta en Explorador de Windows">📁</button>
+            </div>
+          </div>
+
+          <!-- Pestañas / Bloques de Tweaks -->
+          <div class="tweak-modules-container">
+            
+            <!-- 1. BLOQUE FOV & ULTRAWIDE -->
+            <div class="tweak-block">
+              <div class="block-head">
+                <span class="block-indicator">01</span>
+                <span class="block-name">UNIVERSAL FOV & ASPECT RATIO</span>
+              </div>
+              
+              <div class="fov-control-group">
+                <div class="slider-header">
+                  <span class="slider-title">CAMPO DE VISIÓN (FOV)</span>
+                  <span class="slider-value" id="fov-val-display">100°</span>
+                </div>
+                <input type="range" class="voltage-slider" id="fov-slider" min="70" max="125" value="100" step="1">
+                <div class="slider-ticks">
+                  <span>70° (Estándar)</span>
+                  <span>90° (PC Nativo)</span>
+                  <span>105° (Óptimo)</span>
+                  <span>120° (Competitivo)</span>
+                </div>
+              </div>
+
+              <!-- Corrección de Eje Vertical (MaintainYFOV) -->
+              <div class="switch-row highlight">
+                <div class="switch-info">
+                  <span class="switch-title">CORRECCIÓN DE EJE VERTICAL (MaintainYFOV)</span>
+                  <span class="switch-desc">Evita el zoom excesivo y recorte de campo visual en pantallas panorámicas.</span>
+                </div>
+                <label class="matrix-switch">
+                  <input type="checkbox" id="chk-maintain-y" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <!-- Selector de Relación de Aspecto Ultrawide -->
+              <div class="aspect-ratio-selector">
+                <span class="selector-label">ASPECT RATIO FORZADO:</span>
+                <div class="aspect-buttons">
+                  <button class="aspect-btn active" data-aspect="NATIVE">NATIVO</button>
+                  <button class="aspect-btn" data-aspect="21:9">21:9 ULTRAWIDE</button>
+                  <button class="aspect-btn" data-aspect="32:9">32:9 SUPER-WIDE</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. BLOQUE KILL SWITCH DE POSTPROCESADO -->
+            <div class="tweak-block">
+              <div class="block-head">
+                <span class="block-indicator">02</span>
+                <span class="block-name">KILL SWITCH DE POSTPROCESADO (1 CLIC)</span>
+              </div>
+
+              <div class="switches-grid">
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">MOTION BLUR</span>
+                    <span class="switch-desc">Elimina el desenfoque de movimiento en giros de cámara.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-motion-blur" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">DEPTH OF FIELD</span>
+                    <span class="switch-desc">Desactiva la profundidad de campo que vuelve borroso el fondo.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-dof" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">CHROMATIC ABERRATION</span>
+                    <span class="switch-desc">Erradica los bordes de color distorsionados (RGB fringe).</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-chromatic" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">FILM GRAIN & RUIDO</span>
+                    <span class="switch-desc">Elimina la película granulada para una imagen limpia.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-film-grain" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">VIGNETTE</span>
+                    <span class="switch-desc">Elimina el oscurecimiento artificial en las esquinas de pantalla.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-vignette" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">LENS FLARE</span>
+                    <span class="switch-desc">Destellos de lente que ciegan al mirar fuentes de luz.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-lens-flare">
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. BLOQUE RENDIMIENTO & NITIDEZ -->
+            <div class="tweak-block">
+              <div class="block-head">
+                <span class="block-indicator">03</span>
+                <span class="block-name">RENDIMIENTO & CLARIDAD</span>
+              </div>
+
+              <div class="switches-grid">
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">DESBLOQUEAR FPS (SmoothFrameRate Off)</span>
+                    <span class="switch-desc">Elimina el límite arbitrario de fotogramas del motor.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-unlock-fps" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="switch-row">
+                  <div class="switch-info">
+                    <span class="switch-title">FILTRADO ANISOTRÓPICO 16X FORZADO</span>
+                    <span class="switch-desc">Texturas lejanas y suelos con nitidez máxima.</span>
+                  </div>
+                  <label class="matrix-switch">
+                    <input type="checkbox" id="chk-anisotropic-16x" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- BOTONES DE ACCIÓN DE IMPACTO -->
+          <div class="dock-actions-bar">
+            <!-- Botón de Restaurar Fábrica (.bak) -->
+            <button class="btn-restore-factory" id="btn-restore-factory" title="Restaura la configuración oficial de fábrica">
+              <span class="restore-icon">↺</span>
+              <span class="restore-text">RESTAURAR FÁBRICA (.BAK)</span>
+            </button>
+
+            <!-- Botón Principal Aplicar Tweaks -->
+            <button class="btn-apply-strike" id="btn-apply-tweaks">
+              <span class="strike-flash"></span>
+              <span class="strike-text">⚡ INYECTAR PARCHE OPTIX</span>
+            </button>
+          </div>
+
+          <div class="dock-status-msg" id="dock-status-msg"></div>
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- MODAL / NOTIFICACIÓN TOAST DE IMPACTO -->
+    <div class="toast-notification" id="toast-notify">
+      <div class="toast-bar"></div>
+      <div class="toast-content">
+        <div class="toast-title" id="toast-title">ACCION EJECUTADA</div>
+        <div class="toast-desc" id="toast-desc">Los cambios han sido aplicados con éxito.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
